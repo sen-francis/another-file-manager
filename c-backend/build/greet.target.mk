@@ -7,7 +7,6 @@ DEFS_Debug := \
 	'-DUSING_UV_SHARED=1' \
 	'-DUSING_V8_SHARED=1' \
 	'-DV8_DEPRECATION_WARNINGS=1' \
-	'-D_DARWIN_USE_64_BIT_INODE=1' \
 	'-D_LARGEFILE_SOURCE' \
 	'-D_FILE_OFFSET_BITS=64' \
 	'-DNAPI_DISABLE_CPP_EXCEPTIONS' \
@@ -18,50 +17,39 @@ DEFS_Debug := \
 
 # Flags passed to all source files.
 CFLAGS_Debug := \
-	-O0 \
-	-gdwarf-2 \
-	-mmacosx-version-min=10.7 \
-	-arch x86_64 \
+	-fPIC \
+	-pthread \
 	-Wall \
-	-Wendif-labels \
-	-W \
-	-Wno-unused-parameter
+	-Wextra \
+	-Wno-unused-parameter \
+	-m64 \
+	-fPIC \
+	-g \
+	-O0
 
 # Flags passed to only C files.
-CFLAGS_C_Debug := \
-	-fno-strict-aliasing
+CFLAGS_C_Debug :=
 
 # Flags passed to only C++ files.
 CFLAGS_CC_Debug := \
-	-std=gnu++0x \
-	-stdlib=libc++ \
 	-fno-rtti \
-	-fno-exceptions \
-	-fno-threadsafe-statics \
-	-fno-strict-aliasing
-
-# Flags passed to only ObjC files.
-CFLAGS_OBJC_Debug :=
-
-# Flags passed to only ObjC++ files.
-CFLAGS_OBJCC_Debug :=
+	-std=gnu++1y
 
 INCS_Debug := \
-	-I/Users/Uday.Hiwarale/Library/Caches/node-gyp/8.16.1/include/node \
-	-I/Users/Uday.Hiwarale/Library/Caches/node-gyp/8.16.1/src \
-	-I/Users/Uday.Hiwarale/Library/Caches/node-gyp/8.16.1/deps/openssl/config \
-	-I/Users/Uday.Hiwarale/Library/Caches/node-gyp/8.16.1/deps/openssl/openssl/include \
-	-I/Users/Uday.Hiwarale/Library/Caches/node-gyp/8.16.1/deps/uv/include \
-	-I/Users/Uday.Hiwarale/Library/Caches/node-gyp/8.16.1/deps/zlib \
-	-I/Users/Uday.Hiwarale/Library/Caches/node-gyp/8.16.1/deps/v8/include \
-	-I/Users/Uday.Hiwarale/uday-gh/native-addon-example/node_modules/node-addon-api
+	-I/usr/include/nodejs/include/node \
+	-I/usr/include/nodejs/src \
+	-I/usr/include/nodejs/deps/openssl/config \
+	-I/usr/include/nodejs/deps/openssl/openssl/include \
+	-I/usr/include/nodejs/deps/uv/include \
+	-I/usr/include/nodejs/deps/zlib \
+	-I/usr/include/nodejs/deps/v8/include \
+	-I/mnt/d/projects/another-file-manager/c-backend/node_modules/node-addon-api
 
 DEFS_Release := \
 	'-DNODE_GYP_MODULE_NAME=greet' \
 	'-DUSING_UV_SHARED=1' \
 	'-DUSING_V8_SHARED=1' \
 	'-DV8_DEPRECATION_WARNINGS=1' \
-	'-D_DARWIN_USE_64_BIT_INODE=1' \
 	'-D_LARGEFILE_SOURCE' \
 	'-D_FILE_OFFSET_BITS=64' \
 	'-DNAPI_DISABLE_CPP_EXCEPTIONS' \
@@ -69,43 +57,33 @@ DEFS_Release := \
 
 # Flags passed to all source files.
 CFLAGS_Release := \
-	-Os \
-	-gdwarf-2 \
-	-mmacosx-version-min=10.7 \
-	-arch x86_64 \
+	-fPIC \
+	-pthread \
 	-Wall \
-	-Wendif-labels \
-	-W \
-	-Wno-unused-parameter
+	-Wextra \
+	-Wno-unused-parameter \
+	-m64 \
+	-fPIC \
+	-O3 \
+	-fno-omit-frame-pointer
 
 # Flags passed to only C files.
-CFLAGS_C_Release := \
-	-fno-strict-aliasing
+CFLAGS_C_Release :=
 
 # Flags passed to only C++ files.
 CFLAGS_CC_Release := \
-	-std=gnu++0x \
-	-stdlib=libc++ \
 	-fno-rtti \
-	-fno-exceptions \
-	-fno-threadsafe-statics \
-	-fno-strict-aliasing
-
-# Flags passed to only ObjC files.
-CFLAGS_OBJC_Release :=
-
-# Flags passed to only ObjC++ files.
-CFLAGS_OBJCC_Release :=
+	-std=gnu++1y
 
 INCS_Release := \
-	-I/Users/Uday.Hiwarale/Library/Caches/node-gyp/8.16.1/include/node \
-	-I/Users/Uday.Hiwarale/Library/Caches/node-gyp/8.16.1/src \
-	-I/Users/Uday.Hiwarale/Library/Caches/node-gyp/8.16.1/deps/openssl/config \
-	-I/Users/Uday.Hiwarale/Library/Caches/node-gyp/8.16.1/deps/openssl/openssl/include \
-	-I/Users/Uday.Hiwarale/Library/Caches/node-gyp/8.16.1/deps/uv/include \
-	-I/Users/Uday.Hiwarale/Library/Caches/node-gyp/8.16.1/deps/zlib \
-	-I/Users/Uday.Hiwarale/Library/Caches/node-gyp/8.16.1/deps/v8/include \
-	-I/Users/Uday.Hiwarale/uday-gh/native-addon-example/node_modules/node-addon-api
+	-I/usr/include/nodejs/include/node \
+	-I/usr/include/nodejs/src \
+	-I/usr/include/nodejs/deps/openssl/config \
+	-I/usr/include/nodejs/deps/openssl/openssl/include \
+	-I/usr/include/nodejs/deps/uv/include \
+	-I/usr/include/nodejs/deps/zlib \
+	-I/usr/include/nodejs/deps/v8/include \
+	-I/mnt/d/projects/another-file-manager/c-backend/node_modules/node-addon-api
 
 OBJS := \
 	$(obj).target/$(TARGET)/src/greeting.o \
@@ -119,8 +97,6 @@ all_deps += $(OBJS)
 $(OBJS): TOOLSET := $(TOOLSET)
 $(OBJS): GYP_CFLAGS := $(DEFS_$(BUILDTYPE)) $(INCS_$(BUILDTYPE))  $(CFLAGS_$(BUILDTYPE)) $(CFLAGS_C_$(BUILDTYPE))
 $(OBJS): GYP_CXXFLAGS := $(DEFS_$(BUILDTYPE)) $(INCS_$(BUILDTYPE))  $(CFLAGS_$(BUILDTYPE)) $(CFLAGS_CC_$(BUILDTYPE))
-$(OBJS): GYP_OBJCFLAGS := $(DEFS_$(BUILDTYPE)) $(INCS_$(BUILDTYPE))  $(CFLAGS_$(BUILDTYPE)) $(CFLAGS_C_$(BUILDTYPE)) $(CFLAGS_OBJC_$(BUILDTYPE))
-$(OBJS): GYP_OBJCXXFLAGS := $(DEFS_$(BUILDTYPE)) $(INCS_$(BUILDTYPE))  $(CFLAGS_$(BUILDTYPE)) $(CFLAGS_CC_$(BUILDTYPE)) $(CFLAGS_OBJCC_$(BUILDTYPE))
 
 # Suffix rules, putting all outputs into $(obj).
 
@@ -138,50 +114,38 @@ $(obj).$(TOOLSET)/$(TARGET)/%.o: $(obj)/%.cpp FORCE_DO_CMD
 # End of this set of suffix rules
 ### Rules for final target.
 LDFLAGS_Debug := \
-	-undefined dynamic_lookup \
-	-Wl,-no_pie \
-	-Wl,-search_paths_first \
-	-mmacosx-version-min=10.7 \
-	-arch x86_64 \
-	-L$(builddir) \
-	-stdlib=libc++
-
-LIBTOOLFLAGS_Debug := \
-	-undefined dynamic_lookup \
-	-Wl,-no_pie \
-	-Wl,-search_paths_first
+	-pthread \
+	-rdynamic \
+	-m64
 
 LDFLAGS_Release := \
-	-undefined dynamic_lookup \
-	-Wl,-no_pie \
-	-Wl,-search_paths_first \
-	-mmacosx-version-min=10.7 \
-	-arch x86_64 \
-	-L$(builddir) \
-	-stdlib=libc++
+	-pthread \
+	-rdynamic \
+	-m64
 
-LIBTOOLFLAGS_Release := \
-	-undefined dynamic_lookup \
-	-Wl,-no_pie \
-	-Wl,-search_paths_first
+LIBS := \
+	-lnode
 
-LIBS :=
-
-$(builddir)/greet.node: GYP_LDFLAGS := $(LDFLAGS_$(BUILDTYPE))
-$(builddir)/greet.node: LIBS := $(LIBS)
-$(builddir)/greet.node: GYP_LIBTOOLFLAGS := $(LIBTOOLFLAGS_$(BUILDTYPE))
-$(builddir)/greet.node: TOOLSET := $(TOOLSET)
-$(builddir)/greet.node: $(OBJS) FORCE_DO_CMD
+$(obj).target/greet.node: GYP_LDFLAGS := $(LDFLAGS_$(BUILDTYPE))
+$(obj).target/greet.node: LIBS := $(LIBS)
+$(obj).target/greet.node: TOOLSET := $(TOOLSET)
+$(obj).target/greet.node: $(OBJS) FORCE_DO_CMD
 	$(call do_cmd,solink_module)
 
-all_deps += $(builddir)/greet.node
+all_deps += $(obj).target/greet.node
 # Add target alias
 .PHONY: greet
 greet: $(builddir)/greet.node
 
+# Copy this to the executable output path.
+$(builddir)/greet.node: TOOLSET := $(TOOLSET)
+$(builddir)/greet.node: $(obj).target/greet.node FORCE_DO_CMD
+	$(call do_cmd,copy)
+
+all_deps += $(builddir)/greet.node
 # Short alias for building this executable.
 .PHONY: greet.node
-greet.node: $(builddir)/greet.node
+greet.node: $(obj).target/greet.node $(builddir)/greet.node
 
 # Add executable to "all" target.
 .PHONY: all
