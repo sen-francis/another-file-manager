@@ -1,3 +1,7 @@
+###Example Project and Images###
+windows-icons/**
+example-node-app-with-c-backend/**
+
 ### CMake ###
 CMakeLists.txt.user
 CMakeCache.txt
