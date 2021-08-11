@@ -1,0 +1,9 @@
+- On Application Open (Set Folder to Clean)
+- Set Delete Criteria
+	- Date Created
+		- only show date selection if checkbox selected 
+	- Last Modified
+- Show Applicable files matching criteria (delete criteria)
+- User is able to deselect files from this screen and confirm to delete them
+- When Deleted, files to be deleted are put in a folder and then moved to recyling bin
+	- User performs final delete action in case they need to restore any files

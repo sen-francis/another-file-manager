@@ -1,17 +1,22 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <style>
+      h1 {text-align: center;}
+      h2 {text-align: center;}
+      button {align-self: center;}
+    </style>
     <meta charset="UTF-8">
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-    <title>Hello World!</title>
+    <title>Another File Manager</title>
   </head>
   <body>
-    <h1>Hello World!</h1>
-    We are using Node.js <span id="node-version"></span>,
-    Chromium <span id="chrome-version"></span>,
-    and Electron <span id="electron-version"></span>.
-
+    <h1>Welcome to Another File Manager!</h1>
+    <h2>Select a Folder to Begin Cleaning</h2>
+    <div class="file-dialog">
+      <input id="inputId" type="file" webkitdirectory directory multiple style="position: fixed; top: -100em" onclick="window.location.href = 'search-query.html'">
+    </div>
     <!-- You can also require other files to run in this process -->
     <script src="./renderer.js"></script>
   </body>
