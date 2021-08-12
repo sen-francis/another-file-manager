@@ -32,14 +32,14 @@
       function nextFunction() {
         if (document.getElementById("inputID").value != "") {
           // directory selected
-          // store filepath
-          window.sessionStorage.setItem("filePath", document.getElementById("inputID").files[0].path);
+          // set filepath as next page header
+          // [PROBLEM] : current path: "d/..." -> expected path: "D:/..."
+          var fileName = document.getElementById("inputID").files[0].path;
+          var filePath = fileName.substring(5, fileName.lastIndexOf("/"));
+          filePath = filePath.charAt(0).toUpperCase() + filePath.slice(1);
+          filePath = filePath.slice(0,1) + ":" + filePath.slice(1);
+          document.getElementById("headerID").innerHTML = "Current Folder: " + filePath;
           // open query page
-          // window.location.href = 'search-query.html';
-          //const { remote } = require('electron')
-          //remote.getCurrentWindow().loadURL('search-query.html')
-          //window.sessionStorage.setItem("contentDiv", document.getElementById("contentID"));
-          //document.getElementById("contentID").innerHTML = '<object type="text/html" data="search-query.html" ></object>';
           document.getElementById("startPageID").style.display = "none";
           document.getElementById("searchQueryID").style.display = "block";
         }
@@ -52,8 +52,8 @@
   </div>
 
   <div class="searchQuery" id="searchQueryID" style="display:none">
-    <h1 id="headerID">Current Folder: </h1>
-    <h2>Select Search Criteria</h2>
+    <h2 id="headerID">Current Folder: </h2>
+    <h2 id="tmpID">Select Search Criteria</h2>
     <div class="search-criteria">
       <div class="date-created">
         <input type="checkbox" id="createdCheckboxID" name="createdCheckbox" value="createdChecked">
@@ -80,12 +80,10 @@
       <button onclick="resultsPageLoad()">Search</button>
     </div>
     <script>
-      document.getElementById("headerID").textContent = "Current Folder: " + window.sessionStorage.getItem("filePath");
-    </script>
-    <script>
-      function resultsPageLoad(){
+      function resultsPageLoad() {
         document.getElementById("searchQueryID").style.display = "none";
         document.getElementById("searchResultsID").style.display = "block";
+        // should we use cpp to find files matching criteria???
       }
     </script>
   </div>
@@ -96,7 +94,7 @@
       <button onclick="finalPageLoad()">Confirm Deletion</button>
     </div>
     <script>
-      function finalPageLoad(){
+      function finalPageLoad() {
         document.getElementById("searchResultsID").style.display = "none";
         document.getElementById("finalPageID").style.display = "block";
       }
@@ -111,12 +109,17 @@
       <button onclick="startPageLoad()">Clean New Folder</button>
     </div>
     <script>
-      function startPageLoad(){
+      function startPageLoad() {
         document.getElementById("finalPageID").style.display = "none";
         document.getElementById("startPageID").style.display = "block";
+        //window.location.reload();
+        //var remote = require('remote');
+        //remote.getCurrentWindow().reload();
+        // refresh page so previous selection does not show...
       }
     </script>
   </div>
 
 </body>
+
 </html>
