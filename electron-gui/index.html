@@ -1,23 +1,122 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <style>
-      h1 {text-align: center;}
-      h2 {text-align: center;}
-      button {align-self: center;}
-    </style>
-    <meta charset="UTF-8">
-    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-    <title>Another File Manager</title>
-  </head>
-  <body>
+
+<head>
+  <style>
+    h1 {
+      text-align: center;
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    div {
+      text-align: center;
+    }
+  </style>
+  <title>Another File Manager</title>
+</head>
+
+<body>
+  <div class="startPage" id="startPageID">
     <h1>Welcome to Another File Manager!</h1>
     <h2>Select a Folder to Begin Cleaning</h2>
     <div class="file-dialog">
-      <input id="inputId" type="file" webkitdirectory directory multiple style="position: fixed; top: -100em" onclick="window.location.href = 'search-query.html'">
+      <input id="inputID" type="file" webkitdirectory directory multiple>
+      <br>
+      <button id="nextButtonID" onclick="nextFunction()">Next</button>
     </div>
     <!-- You can also require other files to run in this process -->
-    <script src="./renderer.js"></script>
-  </body>
+    <script type="text/javascript">
+      function nextFunction() {
+        if (document.getElementById("inputID").value != "") {
+          // directory selected
+          // store filepath
+          window.sessionStorage.setItem("filePath", document.getElementById("inputID").files[0].path);
+          // open query page
+          // window.location.href = 'search-query.html';
+          //const { remote } = require('electron')
+          //remote.getCurrentWindow().loadURL('search-query.html')
+          //window.sessionStorage.setItem("contentDiv", document.getElementById("contentID"));
+          //document.getElementById("contentID").innerHTML = '<object type="text/html" data="search-query.html" ></object>';
+          document.getElementById("startPageID").style.display = "none";
+          document.getElementById("searchQueryID").style.display = "block";
+        }
+        else {
+          //directory not selected
+          alert("ERROR! Please select a directory before continuing.");
+        }
+      }
+    </script>
+  </div>
+
+  <div class="searchQuery" id="searchQueryID" style="display:none">
+    <h1 id="headerID">Current Folder: </h1>
+    <h2>Select Search Criteria</h2>
+    <div class="search-criteria">
+      <div class="date-created">
+        <input type="checkbox" id="createdCheckboxID" name="createdCheckbox" value="createdChecked">
+        <label for="createdCheckbox">Date Created</label> <br>
+        <label for="createdFromDate">From: </label>
+        <input type="date" id="createdFromDateID" name="createdFromDate"> <br>
+        <label for="createdToDate">To: </label>
+        <input type="date" id="createdToDateID" name="createdToDate">
+      </div>
+      <div class="date-modified">
+        <input type="checkbox" id="modifiedCheckboxID" name="modifiedCheckbox" value="modifiedChecked">
+        <label for="modifiedCheckbox">Date Modified</label> <br>
+        <label for="modifiedFromDate">From: </label>
+        <input type="date" id="modifiedFromDateID" name="modifiedFromDate"> <br>
+        <label for="modifiedToDate">To: </label>
+        <input type="date" id="modifiedToDateID" name="modifiedToDate">
+      </div>
+      <script type="text/javascript">
+        createdFromDateID.max = new Date().toISOString().split("T")[0];
+        createdToDateID.max = new Date().toISOString().split("T")[0];
+        modifiedFromDateID.max = new Date().toISOString().split("T")[0];
+        modifiedToDateID.max = new Date().toISOString().split("T")[0];
+      </script>
+      <button onclick="resultsPageLoad()">Search</button>
+    </div>
+    <script>
+      document.getElementById("headerID").textContent = "Current Folder: " + window.sessionStorage.getItem("filePath");
+    </script>
+    <script>
+      function resultsPageLoad(){
+        document.getElementById("searchQueryID").style.display = "none";
+        document.getElementById("searchResultsID").style.display = "block";
+      }
+    </script>
+  </div>
+
+  <div class="searchResults" id="searchResultsID" style="display:none">
+    <h1>Files Found</h1>
+    <div class="files">
+      <button onclick="finalPageLoad()">Confirm Deletion</button>
+    </div>
+    <script>
+      function finalPageLoad(){
+        document.getElementById("searchResultsID").style.display = "none";
+        document.getElementById("finalPageID").style.display = "block";
+      }
+    </script>
+  </div>
+
+  <div class="finalPage" id="finalPageID" style="display:none">
+    <h1>Files Deleted Succesfully!</h1>
+    <h2>Files can be found in Recycling Bin in a folder named </h2>
+    <h2>Be sure to delete the files after review!</h2>
+    <div>
+      <button onclick="startPageLoad()">Clean New Folder</button>
+    </div>
+    <script>
+      function startPageLoad(){
+        document.getElementById("finalPageID").style.display = "none";
+        document.getElementById("startPageID").style.display = "block";
+      }
+    </script>
+  </div>
+
+</body>
 </html>
