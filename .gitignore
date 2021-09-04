@@ -1,6 +1,6 @@
 ###Example Project and Images###
 windows-icons/**
-example-node-app-with-c-backend/**
+examples/**
 
 ### CMake ###
 CMakeLists.txt.user
