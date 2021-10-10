@@ -1,13 +1,7 @@
 <!DOCTYPE html>
 <html>
     <body>
+        <script type="text/javascript" src="./test.js"></script>
         <button id="submitButtonID" onclick="submitFunction()">Submit</button>
     </body>
-    <script type="text/javascript">
-        function submitFunction(){
-            alert("pre worker");
-            var worker = new Worker("./test.js");
-            alert("post worker");
-        }
-    </script>
 </html>

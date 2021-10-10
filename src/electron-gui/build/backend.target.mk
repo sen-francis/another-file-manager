@@ -7,8 +7,14 @@ DEFS_Debug := \
 	'-DUSING_UV_SHARED=1' \
 	'-DUSING_V8_SHARED=1' \
 	'-DV8_DEPRECATION_WARNINGS=1' \
+	'-DV8_DEPRECATION_WARNINGS' \
+	'-DV8_IMMINENT_DEPRECATION_WARNINGS' \
 	'-D_LARGEFILE_SOURCE' \
 	'-D_FILE_OFFSET_BITS=64' \
+	'-DV8_COMPRESS_POINTERS' \
+	'-DV8_31BIT_SMIS_ON_64BIT_ARCH' \
+	'-DV8_REVERSE_JSARGS' \
+	'-D__STDC_FORMAT_MACROS' \
 	'-DNAPI_DISABLE_CPP_EXCEPTIONS' \
 	'-DBUILDING_NODE_EXTENSION' \
 	'-DDEBUG' \
@@ -38,13 +44,13 @@ CFLAGS_CC_Debug := \
 	-std=c++17
 
 INCS_Debug := \
-	-I/usr/include/nodejs/include/node \
-	-I/usr/include/nodejs/src \
-	-I/usr/include/nodejs/deps/openssl/config \
-	-I/usr/include/nodejs/deps/openssl/openssl/include \
-	-I/usr/include/nodejs/deps/uv/include \
-	-I/usr/include/nodejs/deps/zlib \
-	-I/usr/include/nodejs/deps/v8/include \
+	-I/home/sen-francis/.electron-gyp/.cache/node-gyp/13.1.9/include/node \
+	-I/home/sen-francis/.electron-gyp/.cache/node-gyp/13.1.9/src \
+	-I/home/sen-francis/.electron-gyp/.cache/node-gyp/13.1.9/deps/openssl/config \
+	-I/home/sen-francis/.electron-gyp/.cache/node-gyp/13.1.9/deps/openssl/openssl/include \
+	-I/home/sen-francis/.electron-gyp/.cache/node-gyp/13.1.9/deps/uv/include \
+	-I/home/sen-francis/.electron-gyp/.cache/node-gyp/13.1.9/deps/zlib \
+	-I/home/sen-francis/.electron-gyp/.cache/node-gyp/13.1.9/deps/v8/include \
 	-I/mnt/d/projects/another-file-manager/src/electron-gui/node_modules/node-addon-api
 
 DEFS_Release := \
@@ -52,8 +58,14 @@ DEFS_Release := \
 	'-DUSING_UV_SHARED=1' \
 	'-DUSING_V8_SHARED=1' \
 	'-DV8_DEPRECATION_WARNINGS=1' \
+	'-DV8_DEPRECATION_WARNINGS' \
+	'-DV8_IMMINENT_DEPRECATION_WARNINGS' \
 	'-D_LARGEFILE_SOURCE' \
 	'-D_FILE_OFFSET_BITS=64' \
+	'-DV8_COMPRESS_POINTERS' \
+	'-DV8_31BIT_SMIS_ON_64BIT_ARCH' \
+	'-DV8_REVERSE_JSARGS' \
+	'-D__STDC_FORMAT_MACROS' \
 	'-DNAPI_DISABLE_CPP_EXCEPTIONS' \
 	'-DBUILDING_NODE_EXTENSION'
 
@@ -80,17 +92,18 @@ CFLAGS_CC_Release := \
 	-std=c++17
 
 INCS_Release := \
-	-I/usr/include/nodejs/include/node \
-	-I/usr/include/nodejs/src \
-	-I/usr/include/nodejs/deps/openssl/config \
-	-I/usr/include/nodejs/deps/openssl/openssl/include \
-	-I/usr/include/nodejs/deps/uv/include \
-	-I/usr/include/nodejs/deps/zlib \
-	-I/usr/include/nodejs/deps/v8/include \
+	-I/home/sen-francis/.electron-gyp/.cache/node-gyp/13.1.9/include/node \
+	-I/home/sen-francis/.electron-gyp/.cache/node-gyp/13.1.9/src \
+	-I/home/sen-francis/.electron-gyp/.cache/node-gyp/13.1.9/deps/openssl/config \
+	-I/home/sen-francis/.electron-gyp/.cache/node-gyp/13.1.9/deps/openssl/openssl/include \
+	-I/home/sen-francis/.electron-gyp/.cache/node-gyp/13.1.9/deps/uv/include \
+	-I/home/sen-francis/.electron-gyp/.cache/node-gyp/13.1.9/deps/zlib \
+	-I/home/sen-francis/.electron-gyp/.cache/node-gyp/13.1.9/deps/v8/include \
 	-I/mnt/d/projects/another-file-manager/src/electron-gui/node_modules/node-addon-api
 
 OBJS := \
-	$(obj).target/$(TARGET)/../cpp-backend/backend.o
+	$(obj).target/$(TARGET)/../cpp-backend/backend.o \
+	$(obj).target/$(TARGET)/../cpp-backend/main.o
 
 # Add to the list of files we specially track dependencies for.
 all_deps += $(OBJS)

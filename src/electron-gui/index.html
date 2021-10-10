@@ -75,59 +75,102 @@
         modifiedFromDateID.max = new Date().toISOString().split("T")[0];
         modifiedToDateID.max = new Date().toISOString().split("T")[0];
       </script>
-      <button onclick="resultsPageLoad()">Search</button>
+      <button id="searchButtonID" onclick="resultsPageLoad()">Search</button>
     </div>
     <script>
-      function resultsPageLoad() {
-        //alert("pre-require");
-        var worker = new Worker("./tmp.js");
-        //alert("post worker");
-        /*// should we use cpp to find files matching criteria???
-        const backend = require("./build/Release/backend.node");
-        var createdFromDate = "NULL";
-        var createdToDate = "NULL";
-        var modifiedFromDate = "NULL";
-        var modifiedToDate = "NULL";
-        alert("post reuqior");
-        // Parse dates into MM/DD/YYYY strings
-        if(document.getElementById("createdCheckbox").checked == true){
-          //check if user does not pick date (call alert)
-          var tmpCreatedFromDate = new Date(document.getElementById("createdCheckbox").value);
-          // might have to increment month seperately in var
-          createdFromDate = tmpCreatedFromDate.getMonth()+1 + "/" + tmpCreatedFromDate.getDate() + "/" + tmpCreatedFromDate.getFullYear();
+        function resultsPageLoad(){
+          const backend = require("./build/Release/backend.node");
+          var createdFromDate = "NULL";
+          var createdToDate = "NULL";
+          var modifiedFromDate = "NULL";
+          var modifiedToDate = "NULL";
+          // Parse dates into MM/DD/YYYY strings
+          if(document.getElementById("createdCheckboxID").checked == true){
+            //get dates from 
+            var tmpCreatedFromDate = new Date(document.getElementById("createdFromDateID").value);
+            var tmpCreatedToDate = new Date(document.getElementById("createdToDateID").value);
 
-          var tmpCreatedToDate = new Date(document.getElementById("createdCheckbox").value);
-          createdToDate = tmpCreatedToDate.getMonth()+1 + "/" + tmpCreatedToDate.getDate() + "/" + tmpCreatedToDate.getFullYear();
-        }
+            //check if both dates selected
+            if(tmpCreatedFromDate == "Invalid Date" || tmpCreatedToDate == "Invalid Date"){
+              alert("[ERROR] Select both dates in created date range, or deselect checkbox.");
+              return;
+            }
 
-        if(document.getElementById("modifiedCheckbox").checked == true){
-          var tmpModifiedFromDate = new Date(document.getElementById("modifiedCheckbox").value);
-          modifiedFromDate = tmpModifiedFromDate.getMonth()+1 + "/" + tmpModifiedFromDate.getDate() + "/" + tmpModifiedFromDate.getFullYear();
+            //check if date range valid
+            if(tmpCreatedFromDate > tmpCreatedToDate){
+              alert("[ERROR] Created Date Range Invalid!")
+              return;
+            }
 
-          var tmpModifiedToDate = new Date(document.getElementById("modifiedCheckbox").value);
-          modifiedToDate = tmpModifiedToDate.getMonth()+1 + "/" + tmpModifiedToDate.getDate() + "/" + tmpModifiedToDate.getFullYear();
-        }
-        var fileName = document.getElementById("inputID").files[0].path;
-        var filePath = fileName.substring(0, fileName.lastIndexOf("/"));
+            //convert dates to MM/DD/YYYY format
+            createdFromDate = tmpCreatedFromDate.getMonth()+1 + "/" + (tmpCreatedFromDate.getDate()+1) + "/" + tmpCreatedFromDate.getFullYear();
+            if(tmpCreatedFromDate.getMonth()+1<10){
+              createdFromDate = "0"+createdFromDate;
+            }
+            createdToDate = tmpCreatedToDate.getMonth()+1 + "/" + (tmpCreatedToDate.getDate()+1) + "/" + tmpCreatedToDate.getFullYear();
+            if(tmpCreatedToDate.getMonth()+1<10){
+              createdToDate = "0"+createdToDate;
+            }
+          }
 
-        alert("got here");
-        var tmpArr = backend.search(filePath,createdFromDate,createdToDate,modifiedFromDate,modifiedToDate);
-        alert("and here");
-        tmpArr.forEach(element => alert(element));
-        alert("not here");
-        worker.onmessage = function(event) { 
-          event.data.forEach(element => alert(element));
-          alert(event.data);
-          alert("HELLO");
-        }
-        worker.onerror = function (event) {
-          console.log(event.message, event);
-        };*/
+          if(document.getElementById("modifiedCheckboxID").checked == true){
+            //get dates from 
+            var tmpModifiedFromDate = new Date(document.getElementById("modifiedFromDateID").value);
+            var tmpModifiedToDate = new Date(document.getElementById("modifiedToDateID").value);
+
+            //check if both dates selected
+            if(tmpModifiedFromDate == "Invalid Date" || tmpModifiedToDate == "Invalid Date"){
+              alert("[ERROR] Select both dates in modified date range, or deselect checkbox.");
+              return;
+            }
+
+            //check if date range valid
+            if(tmpModifiedFromDate > tmpModifiedToDate){
+              alert("[ERROR] Modified Date Range Invalid!")
+              return;
+            }
+
+            //convert dates to MM/DD/YYYY format
+            modifiedFromDate = tmpModifiedFromDate.getMonth()+1 + "/" + (tmpModifiedFromDate.getDate()+1) + "/" + tmpModifiedFromDate.getFullYear();
+            if(tmpModifiedFromDate.getMonth()+1<10){
+              modifiedFromDate = "0"+modifiedFromDate;
+            }
+            modifiedToDate = tmpModifiedToDate.getMonth()+1 + "/" + (tmpModifiedToDate.getDate()+1) + "/" + tmpModifiedToDate.getFullYear();
+            if(tmpModifiedToDate.getMonth()+1<10){
+              modifiedToDate = "0"+modifiedToDate;
+            }
+          }
+          var fileName = document.getElementById("inputID").files[0].path;
+          var filePath = fileName.substring(0, fileName.lastIndexOf("/"));
+
+          //call c++ function to search for files based on criteria
+          var results = backend.search(filePath,createdFromDate,createdToDate,modifiedFromDate,modifiedToDate);
+          
+          //iterate through files and add them to filesList 
+          for(const item of results){
+            //Get filesList
+            var filesList = document.getElementById('filesListID');
+
+            //Create new list element
+            var li = document.createElement('li');//li
+            
+            //Create checkbox
+            var checkbox = document.createElement('input');
+                checkbox.type = "checkbox";
+            
+            //add checkbox to list element
+            li.appendChild(checkbox);
+
+            //add file name to list element
+            li.appendChild(document.createTextNode(item));
+
+            //add list element to filesList
+            filesList.appendChild(li); 
+          }
+
         // Displays next screen
-        worker.terminate();
-        //document.getElementById("searchQueryID").style.display = "none";
-        //document.getElementById("searchResultsID").style.display = "block";
-        alert("????");
+        document.getElementById("searchQueryID").style.display = "none";
+        document.getElementById("searchResultsID").style.display = "block";
       }
     </script>
   </div>
@@ -135,10 +178,12 @@
   <div class="searchResults" id="searchResultsID" style="display:none">
     <h1>Files Found</h1>
     <div class="files">
+      <ul id="filesListID" style="list-style-type:none;"></ul>
       <button onclick="finalPageLoad()">Confirm Deletion</button>
     </div>
     <script>
       function finalPageLoad() {
+        //iterate through checkbox list and add selected ones to finalList then call c++ function to delete
         document.getElementById("searchResultsID").style.display = "none";
         document.getElementById("finalPageID").style.display = "block";
       }
@@ -163,7 +208,6 @@
       }
     </script>
   </div>
-
 </body>
 
 </html>

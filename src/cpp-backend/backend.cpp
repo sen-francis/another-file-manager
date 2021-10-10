@@ -5,44 +5,8 @@
 #include <ctime>
 #include <unordered_map>
 #include <utility>
-
-std::vector<std::string> backend::search(std::string folderPath, std::pair<std::string, std::string> createdDates, std::pair<std::string, std::string> modifiedDates){
-  std::vector<std::string> files;
-  for (const auto & entry : std::filesystem::directory_iterator(folderPath)){
-    std::string file = entry.path().u8string();
-    struct stat t_stat;
-    stat(file.c_str(), &t_stat);
-    std::string createdDate = backend::dateConverter(std::ctime(&t_stat.st_ctime));
-    std::string modifiedDate = backend::dateConverter(std::ctime(&t_stat.st_mtime));
-    if(createdDates.first != "NULL" && createdDates.second != "NULL"){
-      if(!dateRangeComparison(createdDate, createdDates)){
-        // If date is not in between given date range, don't add file
-        continue;
-      }
-    }
-
-    if(modifiedDates.first != "NULL" && modifiedDates.second != "NULL"){
-      if(!dateRangeComparison(modifiedDate, modifiedDates)){
-        // If date is not in between given date range, don't add file
-        continue;
-      }
-    }
-
-    // Only add file if passes criteria
-    files.push_back(file);
-  }
-  return files;
-}
-
-// Converts date to MM/DD/YYYY Format
-std::string backend::dateConverter(std::string date){
-  // date is originally in this example format: "Sat Sep 19 18:57:40 2020"
-  // after this modification, date should be: "Sep 19 2020"
-  date = date.substr(4,7)+date.substr(20,4);
-  // date should now be : "09/19/2020"
-  date = backend::getMonthIndex(date.substr(0,3))+"/"+date.substr(4,2)+"/"+date.substr(7,4);
-  return date;
-}
+#include <vector>
+#include <string>
 
 std::string backend::getMonthIndex(std::string month)
 {
@@ -78,16 +42,16 @@ bool backend::dateRangeComparison(std::string date, std::pair<std::string, std::
   std::stringstream toDateStream(dateRange.second);
 
   // Get dates in terms of seconds so easy to compare
-  struct tm dateTime;
-  dateStream >> std::get_time( &dateTime, "%d\\%m\\%Y" );
+  std::tm dateTime = {0};
+  dateStream >> std::get_time( &dateTime, "%m/%d/%Y" );
   std::time_t dateSeconds = std::mktime( & dateTime );
 
-  struct tm fromDateTime;
-  fromDateStream >> std::get_time( &fromDateTime, "%d\\%m\\%Y" );
+  std::tm fromDateTime = {0};
+  fromDateStream >> std::get_time( &fromDateTime, "%m/%d/%Y" );
   std::time_t fromDateSeconds = std::mktime( & fromDateTime );
 
-  struct tm toDateTime;
-  toDateStream >> std::get_time( &toDateTime, "%d\\%m\\%Y" );
+  std::tm toDateTime = {0};
+  toDateStream >> std::get_time( &toDateTime, "%m/%d/%Y" );
   std::time_t toDateSeconds = std::mktime( & toDateTime );
 
   // If date is in range return true, else return false
@@ -98,19 +62,80 @@ bool backend::dateRangeComparison(std::string date, std::pair<std::string, std::
   return false;
 }
 
+// Converts date to MM/DD/YYYY Format
+std::string backend::dateConverter(std::string date){
+  // date is originally in this example format: "Sat Sep 19 18:57:40 2020"
+  // after this modification, date should be: "Sep 19 2020"
+  date = date.substr(4,7)+date.substr(20,4);
+  // date should now be : "09/19/2020"
+  date = backend::getMonthIndex(date.substr(0,3))+"/"+date.substr(4,2)+"/"+date.substr(7,4);
+  return date;
+}
+
+std::vector<std::string> backend::search(std::string folderPath, std::pair<std::string, std::string> accessedDates, std::pair<std::string, std::string> modifiedDates){
+  std::vector<std::string> files;
+  for (const auto & entry : std::filesystem::directory_iterator(folderPath)){
+    std::string file = entry.path().u8string();
+    struct stat t_stat;
+    stat(file.c_str(), &t_stat);
+    std::string accessedDate = backend::dateConverter(std::ctime(&t_stat.st_atime));
+    std::string modifiedDate = backend::dateConverter(std::ctime(&t_stat.st_mtime));
+    if (accessedDates.first != "NULL" && accessedDates.second != "NULL"){
+      if(!dateRangeComparison(accessedDate, accessedDates)){
+        // If date is not in between given date range, don't add file
+        continue;
+      }
+    }
+
+    if(modifiedDates.first != "NULL" && modifiedDates.second != "NULL"){
+      if(!dateRangeComparison(modifiedDate, modifiedDates)){
+        // If date is not in between given date range, don't add file
+        continue;
+      }
+    }
+
+    // Only add file if passes criteria
+    files.push_back(file);
+  }
+  return files;
+}
+
+std::string backend::delete(std::vector<std::string> fileNames){
+  //get current date for folder namespace
+  std::time_t t = std::time(0);
+  std::tm* now = std::localtime(&t);
+  std::string folderName = "deleted-files-"+(now->tm_mon+1)+"-"+now->tm_mday+"-"+(now->tm_year+1900);
+  //create folder
+  //will ./ here create in correct spot???
+  std::filesystem::create_directories("./"+folderName);
+  //move all files to folder
+  for(int  i = 0; i < fileNames.size(); i++){
+    try {
+      std::filesystem::rename(fileNames[i], "to.txt");
+    }
+    catch (std::filesystem::filesystem_error& e) {
+      std::cout << e.what() << '\n';
+    }
+  }
+
+  //move folder to recycling bin (AKA delete)
+}
+
 // Function serves as link between JS and C++ so that objects can be converted between languages
 Napi::Array backend::searchWrapped(const Napi::CallbackInfo& info){
   Napi::Env env = info.Env();
-
+  if (info.Length() < 5) {
+      Napi::TypeError::New(env, "Incorrect number of arguments.").ThrowAsJavaScriptException();
+  }
   // Parsing input
   std::string folderPath = info[0].ToString().Utf8Value();
-  std::string createdFromDate = info[1].ToString().Utf8Value();
-  std::string createdToDate = info[2].ToString().Utf8Value();
+  std::string accessedFromDate = info[1].ToString().Utf8Value();
+  std::string accessedToDate = info[2].ToString().Utf8Value();
   std::string modifiedFromDate = info[3].ToString().Utf8Value();
   std::string modifiedToDate = info[4].ToString().Utf8Value();
 
   // Call search function
-  std::vector<std::string> results = backend::search(folderPath, std::make_pair(createdFromDate, createdToDate), std::make_pair(modifiedFromDate, modifiedToDate));
+  std::vector<std::string> results = backend::search(folderPath, std::make_pair(accessedFromDate, accessedToDate), std::make_pair(modifiedFromDate, modifiedToDate));
 
   // Iterate through vector to create Napi::Array based on results
   Napi::Array napiResults = Napi::Array::New(env, results.size());
@@ -120,8 +145,23 @@ Napi::Array backend::searchWrapped(const Napi::CallbackInfo& info){
   return napiResults;
 }
 
+Napi::String backend::deleteWrapped(const Napi::CallbackInfo& info){
+  Napi::Env env = info.Env();
+  if (info.Length() < 1) {
+      Napi::TypeError::New(env, "Incorrect number of arguments.").ThrowAsJavaScriptException();
+  }
+  Napi::Array fileNapiArray = info[0];
+  std::vector<std::string> filesVector;
+  for(int i = 0; i < fileNapiArray.Length(); i++){
+    filesVector.push_back(filesNapArray[i].ToString().Utf8Value());
+  }
+  std::string folderName = backend::delete(filesVector);
+  return Napi::String::New(env,folderName);
+}
+
 Napi::Object backend::Init(Napi::Env env, Napi::Object exports)
 {
   exports.Set("search", Napi::Function::New(env, backend::searchWrapped));
+  exports.Set("delete", Napi::Function::New(env, backend::deleteWrapped));
   return exports;
 }

@@ -1,5 +1,12 @@
-console.log("brh");
-const backend = require("./build/Release/backend.node");
-var tmp = backend.search("/mnt/d/projects/tts-discord-bot","05/25/2021","05/30/2021","NULL","NULL");
-tmp.forEach(item => alert(item));
+function resultsPageLoad(){
+    alert("????");
+    const backend = require("./build/Release/backend.node");
+    alert("????");
+    var createdFromDate = "05/31/2021";
+    var createdToDate = "09/24/2021";
+    var modifiedFromDate = "05/31/2021";
+    var modifiedToDate = "06/01/2021";
+    var tmpArr = backend.search("/mnt/d/projects/tts-discord-bot",createdFromDate,createdToDate,modifiedFromDate,modifiedToDate);
+    tmpArr.forEach(element => console.log(element));
+}
 

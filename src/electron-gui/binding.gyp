@@ -3,6 +3,7 @@
         "target_name": "backend",
         "sources": [
             "../cpp-backend/backend.cpp",
+            "../cpp-backend/main.cpp",
         ],
         "cflags_cc": [
             "-std=c++17"
