@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <style>
+    h1 {
+      text-align: center;
+      font-weight: bold;
+    }
+
+    h2 {
+      text-align: center;
+      font-weight: bold;
+    }
+
+    div {
+      text-align: center;
+    }
+  </style>
+  <title>Another File Manager</title>
+</head>
+
+<body>
+  <div class="startPage" id="startPageID">
+    <h1>Welcome to Another File Manager!</h1>
+    <h2>Welcome to Another File Manager!</h2>
+    <h2>Select a Folder to Begin Cleaning</h2>
+    <div style="display: inline-block; text-align: left;">
+      <input id="inputID" type="file" webkitdirectory directory multiple>
+    </div>
+    <br>
+    <button id="nextButtonID" onclick="nextFunction()">Next</button>
+    <!-- You can also require other files to run in this process -->
+    <script type="text/javascript">
+      function nextFunction() {
+        if (document.getElementById("inputID").value != "") {
+          // directory selected
+          // set filepath as next page header
+          // [PROBLEM] : current path: "d/..." -> expected path: "D:/..."
+          var fileName = document.getElementById("inputID").files[0].path;
+          var filePath = fileName.substring(0, fileName.lastIndexOf("/"));
+          document.getElementById("headerID").innerHTML = "Current Folder: " + filePath;
+          // open query page
+          document.getElementById("startPageID").style.display = "none";
+          document.getElementById("searchQueryID").style.display = "block";
+        }
+        else {
+          //directory not selected
+          alert("ERROR! Please select a directory before continuing.");
+        }
+      }
+    </script>
+  </div>
+
+  <div class="searchQuery" id="searchQueryID" style="display:none">
+    <h2 id="headerID">Current Folder: </h2>
+    <h2 id="tmpID">Select Search Criteria</h2>
+    <div class="search-criteria">
+      <div style="display: inline-block; text-align: left;">
+        <input type="checkbox" id="accessedCheckboxID" name="accessedCheckbox" value="accessedChecked">
+        <label for="accessedCheckbox">Date Accessed</label> <br>
+        <label for="accessedFromDate">From: </label>
+        <input type="date" id="accessedFromDateID" name="accessedFromDate"> <br>
+        <label for="accessedToDate">To: </label>
+        <input type="date" id="accessedToDateID" name="accessedToDate">
+      </div>
+      <br>
+      <div style="display: inline-block; text-align: left;">
+        <input type="checkbox" id="modifiedCheckboxID" name="modifiedCheckbox" value="modifiedChecked">
+        <label for="modifiedCheckbox">Date Modified</label> <br>
+        <label for="modifiedFromDate">From: </label>
+        <input type="date" id="modifiedFromDateID" name="modifiedFromDate"> <br>
+        <label for="modifiedToDate">To: </label>
+        <input type="date" id="modifiedToDateID" name="modifiedToDate">
+      </div>
+    </div>
+    <script type="text/javascript">
+      accessedFromDateID.max = new Date().toISOString().split("T")[0];
+      accessedToDateID.max = new Date().toISOString().split("T")[0];
+      modifiedFromDateID.max = new Date().toISOString().split("T")[0];
+      modifiedToDateID.max = new Date().toISOString().split("T")[0];
+    </script>
+    <div>
+      <button id="searchButtonID" onclick="resultsPageLoad()">Search</button>
+    </div>
+    <script>
+        function resultsPageLoad(){
+          const backend = require("./build/Release/backend.node");
+          var accessedFromDate = "NULL";
+          var accessedToDate = "NULL";
+          var modifiedFromDate = "NULL";
+          var modifiedToDate = "NULL";
+          // Parse dates into MM/DD/YYYY strings
+          if(document.getElementById("accessedCheckboxID").checked == true){
+            //get dates from 
+            var tmpAccessedFromDate = new Date(document.getElementById("accessedFromDateID").value);
+            var tmpAccessedToDate = new Date(document.getElementById("accessedToDateID").value);
+
+            //check if both dates selected
+            if(tmpAccessedFromDate == "Invalid Date" || tmpAccessedToDate == "Invalid Date"){
+              alert("[ERROR] Select both dates in accessed date range, or deselect checkbox.");
+              return;
+            }
+
+            //check if date range valid
+            if(tmpAccessedFromDate > tmpAccessedToDate){
+              alert("[ERROR] Accessed Date Range Invalid!")
+              return;
+            }
+
+            //convert dates to MM/DD/YYYY format
+            accessedFromDate = tmpAccessedFromDate.getMonth()+1 + "/" + (tmpAccessedFromDate.getDate()+1) + "/" + tmpAccessedFromDate.getFullYear();
+            if(tmpAccessedFromDate.getMonth()+1<10){
+              accessedFromDate = "0"+accessedFromDate;
+            }
+            accessedToDate = tmpAccessedToDate.getMonth()+1 + "/" + (tmpAccessedToDate.getDate()+1) + "/" + tmpAccessedToDate.getFullYear();
+            if(tmpAccessedToDate.getMonth()+1<10){
+              accessedToDate = "0"+accessedToDate;
+            }
+          }
+
+          if(document.getElementById("modifiedCheckboxID").checked == true){
+            //get dates from 
+            var tmpModifiedFromDate = new Date(document.getElementById("modifiedFromDateID").value);
+            var tmpModifiedToDate = new Date(document.getElementById("modifiedToDateID").value);
+
+            //check if both dates selected
+            if(tmpModifiedFromDate == "Invalid Date" || tmpModifiedToDate == "Invalid Date"){
+              alert("[ERROR] Select both dates in modified date range, or deselect checkbox.");
+              return;
+            }
+
+            //check if date range valid
+            if(tmpModifiedFromDate > tmpModifiedToDate){
+              alert("[ERROR] Modified Date Range Invalid!")
+              return;
+            }
+
+            //convert dates to MM/DD/YYYY format
+            modifiedFromDate = tmpModifiedFromDate.getMonth()+1 + "/" + (tmpModifiedFromDate.getDate()+1) + "/" + tmpModifiedFromDate.getFullYear();
+            if(tmpModifiedFromDate.getMonth()+1<10){
+              modifiedFromDate = "0"+modifiedFromDate;
+            }
+            modifiedToDate = tmpModifiedToDate.getMonth()+1 + "/" + (tmpModifiedToDate.getDate()+1) + "/" + tmpModifiedToDate.getFullYear();
+            if(tmpModifiedToDate.getMonth()+1<10){
+              modifiedToDate = "0"+modifiedToDate;
+            }
+          }
+          var fileName = document.getElementById("inputID").files[0].path;
+          var filePath = fileName.substring(0, fileName.lastIndexOf("/"));
+
+          //call c++ function to search for files based on criteria
+          var results = backend.search(filePath,accessedFromDate,accessedToDate,modifiedFromDate,modifiedToDate);
+          
+          //iterate through files and add them to filesList 
+          for(const item of results){
+            //Get filesList
+            var filesList = document.getElementById('filesListID');
+
+            //Create new list element
+            var li = document.createElement('li');//li
+            
+            //Create checkbox
+            var checkbox = document.createElement('input');
+                checkbox.type = "checkbox";
+            
+            //add checkbox to list element
+            li.appendChild(checkbox);
+
+            //add file name to list element
+            li.appendChild(document.createTextNode(item));
+
+            //add list element to filesList
+            filesList.appendChild(li); 
+          }
+
+        // Displays next screen
+        document.getElementById("searchQueryID").style.display = "none";
+        document.getElementById("searchResultsID").style.display = "block";
+      }
+    </script>
+  </div>
+
+  <div class="searchResults" id="searchResultsID" style="display:none">
+    <h2>Files Found</h2>
+    <div style="display: inline-block; text-align: left;">
+      <ul id="filesListID" style="list-style-type:none;"></ul>
+    </div>
+    <div>
+      <button onclick="finalPageLoad()">Confirm Deletion</button>
+    </div>
+    <script>
+      function finalPageLoad() {
+        const backend = require("./build/Release/backend.node");
+        //iterate through checkbox list and add selected ones to finalList then call c++ function to delete
+        var filesList = document.getElementById("filesListID").getElementsByTagName("li");
+        var filesToDelete = [];
+        for(var i = 0; i < filesList.length; i++){
+          if(filesList[i].firstChild.checked == true){
+            filesToDelete.push(filesList[i].lastChild.textContent);
+          }
+        }
+        if(filesToDelete.length == 0){
+          alert("[ERROR] Please select at least one file to delete.")
+          return;
+        }
+        var folderName = backend.deleteFiles(filesToDelete);
+        document.getElementById("finalHeader1ID").innerHTML = "Files can be found in the following directory:<br />";
+        document.getElementById("finalHeader1ID").innerHTML += folderName;
+        document.getElementById("finalHeader2ID").innerHTML = "To access the directory, enter the following command in Windows Run:<br />";
+        document.getElementById("finalHeader2ID").innerHTML += folderName.substring(0,19);
+        document.getElementById("searchResultsID").style.display = "none";
+        document.getElementById("finalPageID").style.display = "block";
+      }
+    </script>
+  </div>
+
+  <div class="finalPage" id="finalPageID" style="display:none">
+    <div style="display: inline-block; text-align: left;">
+      <h2>Files Deleted Succesfully!</h2>
+      <h2 id="finalHeader1ID"></h2>
+      <h2 id="finalHeader2ID"></h2>
+      <h2>After review, delete the directory. Make sure to delete the directory from the Windows Recycle Bin as well.</h2>
+    </div>
+    <br>  
+    <button onclick="startPageLoad()">Clean New Folder</button>
+    <script>
+      function startPageLoad() {
+        //document.getElementById("finalPageID").style.display = "none";
+        //document.getElementById("startPageID").style.display = "block";
+        //const remote = require('electron').remote;
+        //remote.app.relaunch();
+        //remote.app.exit(0);
+      }
+    </script>
+  </div>
+</body>
+
+</html>
