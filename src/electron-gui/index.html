@@ -2,13 +2,16 @@
 <html>
 
 <head>
+  <meta charset="UTF-8">
   <style>
     h1 {
       text-align: center;
+      font-weight: bold;
     }
 
     h2 {
       text-align: center;
+      font-weight: bold;
     }
 
     div {
@@ -21,12 +24,13 @@
 <body>
   <div class="startPage" id="startPageID">
     <h1>Welcome to Another File Manager!</h1>
+    <h2>Welcome to Another File Manager!</h2>
     <h2>Select a Folder to Begin Cleaning</h2>
-    <div class="file-dialog">
+    <div style="display: inline-block; text-align: left;">
       <input id="inputID" type="file" webkitdirectory directory multiple>
-      <br>
-      <button id="nextButtonID" onclick="nextFunction()">Next</button>
     </div>
+    <br>
+    <button id="nextButtonID" onclick="nextFunction()">Next</button>
     <!-- You can also require other files to run in this process -->
     <script type="text/javascript">
       function nextFunction() {
@@ -53,15 +57,16 @@
     <h2 id="headerID">Current Folder: </h2>
     <h2 id="tmpID">Select Search Criteria</h2>
     <div class="search-criteria">
-      <div class="date-created">
-        <input type="checkbox" id="createdCheckboxID" name="createdCheckbox" value="createdChecked">
-        <label for="createdCheckbox">Date Created</label> <br>
-        <label for="createdFromDate">From: </label>
-        <input type="date" id="createdFromDateID" name="createdFromDate"> <br>
-        <label for="createdToDate">To: </label>
-        <input type="date" id="createdToDateID" name="createdToDate">
+      <div style="display: inline-block; text-align: left;">
+        <input type="checkbox" id="accessedCheckboxID" name="accessedCheckbox" value="accessedChecked">
+        <label for="accessedCheckbox">Date Accessed</label> <br>
+        <label for="accessedFromDate">From: </label>
+        <input type="date" id="accessedFromDateID" name="accessedFromDate"> <br>
+        <label for="accessedToDate">To: </label>
+        <input type="date" id="accessedToDateID" name="accessedToDate">
       </div>
-      <div class="date-modified">
+      <br>
+      <div style="display: inline-block; text-align: left;">
         <input type="checkbox" id="modifiedCheckboxID" name="modifiedCheckbox" value="modifiedChecked">
         <label for="modifiedCheckbox">Date Modified</label> <br>
         <label for="modifiedFromDate">From: </label>
@@ -69,47 +74,49 @@
         <label for="modifiedToDate">To: </label>
         <input type="date" id="modifiedToDateID" name="modifiedToDate">
       </div>
-      <script type="text/javascript">
-        createdFromDateID.max = new Date().toISOString().split("T")[0];
-        createdToDateID.max = new Date().toISOString().split("T")[0];
-        modifiedFromDateID.max = new Date().toISOString().split("T")[0];
-        modifiedToDateID.max = new Date().toISOString().split("T")[0];
-      </script>
+    </div>
+    <script type="text/javascript">
+      accessedFromDateID.max = new Date().toISOString().split("T")[0];
+      accessedToDateID.max = new Date().toISOString().split("T")[0];
+      modifiedFromDateID.max = new Date().toISOString().split("T")[0];
+      modifiedToDateID.max = new Date().toISOString().split("T")[0];
+    </script>
+    <div>
       <button id="searchButtonID" onclick="resultsPageLoad()">Search</button>
     </div>
     <script>
         function resultsPageLoad(){
           const backend = require("./build/Release/backend.node");
-          var createdFromDate = "NULL";
-          var createdToDate = "NULL";
+          var accessedFromDate = "NULL";
+          var accessedToDate = "NULL";
           var modifiedFromDate = "NULL";
           var modifiedToDate = "NULL";
           // Parse dates into MM/DD/YYYY strings
-          if(document.getElementById("createdCheckboxID").checked == true){
+          if(document.getElementById("accessedCheckboxID").checked == true){
             //get dates from 
-            var tmpCreatedFromDate = new Date(document.getElementById("createdFromDateID").value);
-            var tmpCreatedToDate = new Date(document.getElementById("createdToDateID").value);
+            var tmpAccessedFromDate = new Date(document.getElementById("accessedFromDateID").value);
+            var tmpAccessedToDate = new Date(document.getElementById("accessedToDateID").value);
 
             //check if both dates selected
-            if(tmpCreatedFromDate == "Invalid Date" || tmpCreatedToDate == "Invalid Date"){
-              alert("[ERROR] Select both dates in created date range, or deselect checkbox.");
+            if(tmpAccessedFromDate == "Invalid Date" || tmpAccessedToDate == "Invalid Date"){
+              alert("[ERROR] Select both dates in accessed date range, or deselect checkbox.");
               return;
             }
 
             //check if date range valid
-            if(tmpCreatedFromDate > tmpCreatedToDate){
-              alert("[ERROR] Created Date Range Invalid!")
+            if(tmpAccessedFromDate > tmpAccessedToDate){
+              alert("[ERROR] Accessed Date Range Invalid!")
               return;
             }
 
             //convert dates to MM/DD/YYYY format
-            createdFromDate = tmpCreatedFromDate.getMonth()+1 + "/" + (tmpCreatedFromDate.getDate()+1) + "/" + tmpCreatedFromDate.getFullYear();
-            if(tmpCreatedFromDate.getMonth()+1<10){
-              createdFromDate = "0"+createdFromDate;
+            accessedFromDate = tmpAccessedFromDate.getMonth()+1 + "/" + (tmpAccessedFromDate.getDate()+1) + "/" + tmpAccessedFromDate.getFullYear();
+            if(tmpAccessedFromDate.getMonth()+1<10){
+              accessedFromDate = "0"+accessedFromDate;
             }
-            createdToDate = tmpCreatedToDate.getMonth()+1 + "/" + (tmpCreatedToDate.getDate()+1) + "/" + tmpCreatedToDate.getFullYear();
-            if(tmpCreatedToDate.getMonth()+1<10){
-              createdToDate = "0"+createdToDate;
+            accessedToDate = tmpAccessedToDate.getMonth()+1 + "/" + (tmpAccessedToDate.getDate()+1) + "/" + tmpAccessedToDate.getFullYear();
+            if(tmpAccessedToDate.getMonth()+1<10){
+              accessedToDate = "0"+accessedToDate;
             }
           }
 
@@ -144,7 +151,7 @@
           var filePath = fileName.substring(0, fileName.lastIndexOf("/"));
 
           //call c++ function to search for files based on criteria
-          var results = backend.search(filePath,createdFromDate,createdToDate,modifiedFromDate,modifiedToDate);
+          var results = backend.search(filePath,accessedFromDate,accessedToDate,modifiedFromDate,modifiedToDate);
           
           //iterate through files and add them to filesList 
           for(const item of results){
@@ -176,9 +183,11 @@
   </div>
 
   <div class="searchResults" id="searchResultsID" style="display:none">
-    <h1>Files Found</h1>
-    <div class="files">
+    <h2>Files Found</h2>
+    <div style="display: inline-block; text-align: left;">
       <ul id="filesListID" style="list-style-type:none;"></ul>
+    </div>
+    <div>
       <button onclick="finalPageLoad()">Confirm Deletion</button>
     </div>
     <script>
@@ -197,8 +206,10 @@
           return;
         }
         var folderName = backend.deleteFiles(filesToDelete);
-        document.getElementById("finalHeader1ID").textContent = "Files can be found in the following directory:\n" + folderName;
-        document.getElementById("finalHeader2ID").textContent = "To access the directory, enter the following command in Windows Run:\n"+folderName.substring(0,19);
+        document.getElementById("finalHeader1ID").innerHTML = "Files can be found in the following directory:<br />";
+        document.getElementById("finalHeader1ID").innerHTML += folderName;
+        document.getElementById("finalHeader2ID").innerHTML = "To access the directory, enter the following command in Windows Run:<br />";
+        document.getElementById("finalHeader2ID").innerHTML += folderName.substring(0,19);
         document.getElementById("searchResultsID").style.display = "none";
         document.getElementById("finalPageID").style.display = "block";
       }
@@ -206,20 +217,21 @@
   </div>
 
   <div class="finalPage" id="finalPageID" style="display:none">
-    <h2>Files Deleted Succesfully!</h1>
-    <h2 id="finalHeader1ID"></h2>
-    <h2 id="finalHeader2ID"></h2>
-    <h2>After review, delete the directory. Make sure to delete the directory from the Windows Recycle Bin as well.</h2>
-    <div>
-      <button onclick="startPageLoad()">Clean New Folder</button>
+    <div style="display: inline-block; text-align: left;">
+      <h2>Files Deleted Succesfully!</h2>
+      <h2 id="finalHeader1ID"></h2>
+      <h2 id="finalHeader2ID"></h2>
+      <h2>After review, delete the directory. Make sure to delete the directory from the Windows Recycle Bin as well.</h2>
     </div>
+    <br>  
+    <button onclick="startPageLoad()">Clean New Folder</button>
     <script>
       function startPageLoad() {
         //document.getElementById("finalPageID").style.display = "none";
         //document.getElementById("startPageID").style.display = "block";
-        const remote = require('electron').remote;
-        remote.app.relaunch();
-        remote.app.exit(0);
+        //const remote = require('electron').remote;
+        //remote.app.relaunch();
+        //remote.app.exit(0);
       }
     </script>
   </div>
