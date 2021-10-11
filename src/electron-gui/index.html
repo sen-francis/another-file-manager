@@ -183,7 +183,22 @@
     </div>
     <script>
       function finalPageLoad() {
+        const backend = require("./build/Release/backend.node");
         //iterate through checkbox list and add selected ones to finalList then call c++ function to delete
+        var filesList = document.getElementById("filesListID").getElementsByTagName("li");
+        var filesToDelete = [];
+        for(var i = 0; i < filesList.length; i++){
+          if(filesList[i].firstChild.checked == true){
+            filesToDelete.push(filesList[i].lastChild.textContent);
+          }
+        }
+        if(filesToDelete.length == 0){
+          alert("[ERROR] Please select at least one file to delete.")
+          return;
+        }
+        var folderName = backend.deleteFiles(filesToDelete);
+        document.getElementById("finalHeader1ID").textContent = "Files can be found in the following directory:\n" + folderName;
+        document.getElementById("finalHeader2ID").textContent = "To access the directory, enter the following command in Windows Run:\n"+folderName.substring(0,19);
         document.getElementById("searchResultsID").style.display = "none";
         document.getElementById("finalPageID").style.display = "block";
       }
@@ -191,20 +206,20 @@
   </div>
 
   <div class="finalPage" id="finalPageID" style="display:none">
-    <h1>Files Deleted Succesfully!</h1>
-    <h2>Files can be found in Recycling Bin in a folder named </h2>
-    <h2>Be sure to delete the files after review!</h2>
+    <h2>Files Deleted Succesfully!</h1>
+    <h2 id="finalHeader1ID"></h2>
+    <h2 id="finalHeader2ID"></h2>
+    <h2>After review, delete the directory. Make sure to delete the directory from the Windows Recycle Bin as well.</h2>
     <div>
       <button onclick="startPageLoad()">Clean New Folder</button>
     </div>
     <script>
       function startPageLoad() {
-        document.getElementById("finalPageID").style.display = "none";
-        document.getElementById("startPageID").style.display = "block";
-        //window.location.reload();
-        //var remote = require('remote');
-        //remote.getCurrentWindow().reload();
-        // refresh page so previous selection does not show...
+        //document.getElementById("finalPageID").style.display = "none";
+        //document.getElementById("startPageID").style.display = "block";
+        const remote = require('electron').remote;
+        remote.app.relaunch();
+        remote.app.exit(0);
       }
     </script>
   </div>

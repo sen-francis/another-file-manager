@@ -100,25 +100,25 @@ std::vector<std::string> backend::search(std::string folderPath, std::pair<std::
   return files;
 }
 
-std::string backend::delete(std::vector<std::string> fileNames){
+std::string backend::deleteFiles(std::vector<std::string> fileNames){
   //get current date for folder namespace
   std::time_t t = std::time(0);
   std::tm* now = std::localtime(&t);
-  std::string folderName = "deleted-files-"+(now->tm_mon+1)+"-"+now->tm_mday+"-"+(now->tm_year+1900);
+  std::string seconds = std::to_string((now->tm_hour*60*60)+(now->tm_min*60)+now->tm_sec);
+  auto p = std::filesystem::path(fileNames[0]);
+  std::string folderPath = p.parent_path().u8string()+"-deleted-files-"+std::to_string(now->tm_mon+1)+"-"+std::to_string(now->tm_mday)+"-"+std::to_string(now->tm_year+1900)+"-"+seconds;
   //create folder
   //will ./ here create in correct spot???
-  std::filesystem::create_directories("./"+folderName);
+  std::filesystem::create_directories(folderPath);
   //move all files to folder
   for(int  i = 0; i < fileNames.size(); i++){
-    try {
-      std::filesystem::rename(fileNames[i], "to.txt");
-    }
-    catch (std::filesystem::filesystem_error& e) {
-      std::cout << e.what() << '\n';
-    }
+    auto file = std::filesystem::path(fileNames[i]);
+    std::filesystem::rename(fileNames[i], folderPath+"/"+file.filename().u8string());
   }
-
-  //move folder to recycling bin (AKA delete)
+  auto folder = std::filesystem::path(folderPath);
+  std::string deltedLocation = folderPath.substr(0,7)+"\$Recycle.Bin/"+folder.filename().u8string();
+  std::filesystem::rename(folderPath,deltedLocation);
+  return deltedLocation;
 }
 
 // Function serves as link between JS and C++ so that objects can be converted between languages
@@ -145,23 +145,23 @@ Napi::Array backend::searchWrapped(const Napi::CallbackInfo& info){
   return napiResults;
 }
 
-Napi::String backend::deleteWrapped(const Napi::CallbackInfo& info){
+Napi::String backend::deleteFilesWrapped(const Napi::CallbackInfo& info){
   Napi::Env env = info.Env();
   if (info.Length() < 1) {
       Napi::TypeError::New(env, "Incorrect number of arguments.").ThrowAsJavaScriptException();
   }
-  Napi::Array fileNapiArray = info[0];
+  Napi::Array fileNapiArray = info[0].As<Napi::Array>();
   std::vector<std::string> filesVector;
   for(int i = 0; i < fileNapiArray.Length(); i++){
-    filesVector.push_back(filesNapArray[i].ToString().Utf8Value());
+    filesVector.push_back(static_cast<Napi::Value>(fileNapiArray[i]).ToString().Utf8Value());
   }
-  std::string folderName = backend::delete(filesVector);
+  std::string folderName = backend::deleteFiles(filesVector);
   return Napi::String::New(env,folderName);
 }
 
 Napi::Object backend::Init(Napi::Env env, Napi::Object exports)
 {
   exports.Set("search", Napi::Function::New(env, backend::searchWrapped));
-  exports.Set("delete", Napi::Function::New(env, backend::deleteWrapped));
+  exports.Set("deleteFiles", Napi::Function::New(env, backend::deleteFilesWrapped));
   return exports;
 }
