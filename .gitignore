@@ -1,6 +1,5 @@
 ###Example Project and Images###
 windows-icons/**
-examples/**
 
 ### CMake ###
 CMakeLists.txt.user
