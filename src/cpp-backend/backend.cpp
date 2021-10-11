@@ -108,13 +108,13 @@ std::string backend::deleteFiles(std::vector<std::string> fileNames){
   auto p = std::filesystem::path(fileNames[0]);
   std::string folderPath = p.parent_path().u8string()+"-deleted-files-"+std::to_string(now->tm_mon+1)+"-"+std::to_string(now->tm_mday)+"-"+std::to_string(now->tm_year+1900)+"-"+seconds;
   //create folder
-  //will ./ here create in correct spot???
   std::filesystem::create_directories(folderPath);
   //move all files to folder
   for(int  i = 0; i < fileNames.size(); i++){
     auto file = std::filesystem::path(fileNames[i]);
     std::filesystem::rename(fileNames[i], folderPath+"/"+file.filename().u8string());
   }
+  //move folder to recycling bin and return path to folder
   auto folder = std::filesystem::path(folderPath);
   std::string deltedLocation = folderPath.substr(0,7)+"\$Recycle.Bin/"+folder.filename().u8string();
   std::filesystem::rename(folderPath,deltedLocation);
