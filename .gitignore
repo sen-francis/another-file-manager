@@ -187,3 +187,13 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+### Electron ###
+#directories
+bower_components
+node_modules
+dist
+
+#files
+*.tgz
+*.log
